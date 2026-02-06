@@ -349,6 +349,7 @@
                         showResult(data);
                     } else if (data.status === 'failed') {
                         clearInterval(interval);
+                        showError(data);
                         showError(data.error || '处理失败');
                     }
                 } catch (error) {
