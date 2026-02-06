@@ -27,6 +27,7 @@ submitit==1.5.4
 sympy==1.14.0
 torch==2.10.0
 torchaudio==2.10.0
+torchcodec
 tqdm==4.67.3
 treetable==0.2.6
 typing_extensions==4.15.0
