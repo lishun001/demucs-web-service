@@ -22,18 +22,44 @@ PM2 配置文件，包含以下配置：
 
 ## 使用方法
 
-### 安装 PM2（首次使用）
-```bash
-npm install -g pm2
-```
+### 一键启动（推荐）
 
-### 启动服务
+启动脚本会自动处理所有环境配置：
+
 ```bash
-# 方法一：使用一键启动脚本（推荐）
+# 1. 安装 PM2（首次）
+npm install -g pm2
+
+# 2. 一键启动
 chmod +x start.sh
 ./start.sh
+```
 
-# 方法二：直接使用 PM2
+**自动处理功能**：
+- ✓ 自动检测虚拟环境
+- ✓ 不存在时自动创建虚拟环境
+- ✓ 自动安装 requirements.txt 中的依赖
+- ✓ 启动 PM2 服务
+
+### 手动安装（可选）
+
+如果需要手动控制虚拟环境创建：
+
+```bash
+# 1. 安装 PM2
+npm install -g pm2
+
+# 2. 创建虚拟环境
+python3 -m venv venv
+
+# 3. 激活虚拟环境并安装依赖
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+# 4. 启动服务
+./start.sh
+# 或直接使用 PM2
 pm2 start ecosystem.config.js
 ```
 
@@ -76,7 +102,14 @@ pm2 save
 - 输出日志: `./logs/out.log`
 
 ## 注意事项
-1. 确保已安装 Python 3 及相关依赖（requirements.txt）
-2. 确保已安装 demucs 模块
-3. 首次运行需要授予 start.sh 执行权限：`chmod +x start.sh`
-4. 日志文件会随着时间增长，建议定期清理或配置日志轮转
+1. **必须创建虚拟环境**：PM2 配置使用 `./venv/bin/python` 作为解释器
+2. 确保虚拟环境中已安装所有依赖（`requirements.txt`）
+3. 确保已安装 demucs 模块
+4. 首次运行需要授予 start.sh 执行权限：`chmod +x start.sh`
+5. 日志文件会随着时间增长，建议定期清理或配置日志轮转
+6. 如果更新了依赖，需要在虚拟环境中重新安装后重启服务
+
+## 虚拟环境说明
+- PM2 会使用项目目录下的 `venv/bin/python` 作为 Python 解释器
+- 环境变量 `VIRTUAL_ENV` 已在 PM2 配置中设置
+- PATH 已配置为优先使用虚拟环境中的可执行文件

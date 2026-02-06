@@ -21,6 +21,47 @@ if ! command -v pm2 &> /dev/null; then
     exit 1
 fi
 
+# 检查虚拟环境是否存在
+if [ ! -d "venv" ]; then
+    echo -e "${YELLOW}→ 虚拟环境不存在，正在创建...${NC}"
+    
+    # 创建虚拟环境
+    python3 -m venv venv
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}错误: 创建虚拟环境失败${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✓ 虚拟环境创建成功${NC}"
+    
+    # 激活虚拟环境并安装依赖
+    if [ -f "requirements.txt" ]; then
+        echo -e "${YELLOW}→ 安装项目依赖...${NC}"
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        deactivate
+        
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}错误: 安装依赖失败${NC}"
+            exit 1
+        fi
+        
+        echo -e "${GREEN}✓ 依赖安装完成${NC}"
+    else
+        echo -e "${YELLOW}警告: 未找到 requirements.txt 文件${NC}"
+    fi
+else
+    echo -e "${GREEN}✓ 虚拟环境已存在${NC}"
+fi
+
+# 检查虚拟环境中的 Python
+if [ ! -f "venv/bin/python" ]; then
+    echo -e "${RED}错误: 虚拟环境中未找到 Python${NC}"
+    exit 1
+fi
+
 # 创建日志目录
 echo -e "${YELLOW}→ 创建日志目录...${NC}"
 mkdir -p logs
