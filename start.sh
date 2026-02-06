@@ -26,7 +26,7 @@ if [ ! -d "venv" ]; then
     echo -e "${YELLOW}→ 虚拟环境不存在，正在创建...${NC}"
     
     # 创建虚拟环境
-    python3 -m venv venv
+    python3.12 -m venv venv
     
     if [ $? -ne 0 ]; then
         echo -e "${RED}错误: 创建虚拟环境失败${NC}"
