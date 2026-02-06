@@ -9,7 +9,7 @@ module.exports = {
   apps: [{
     name: 'demucs-web-service',
     script: 'app.py',
-    interpreter: path.join(venvBinPath, 'python'),
+    interpreter: path.join(venvBinPath, 'python3.12'),
     instances: 1,
     autorestart: true,
     watch: false,
