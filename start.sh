@@ -21,6 +21,73 @@ if ! command -v pm2 &> /dev/null; then
     exit 1
 fi
 
+# 检查 FFmpeg 是否安装
+echo -e "${YELLOW}→ 检查 FFmpeg 是否安装...${NC}"
+if ! command -v ffmpeg &> /dev/null; then
+    echo -e "${RED}警告: FFmpeg 未安装${NC}"
+    echo -e "${YELLOW}Demucs 需要 FFmpeg 来处理音频文件${NC}"
+    
+    # 检测操作系统并尝试自动安装
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS 系统
+        if command -v brew &> /dev/null; then
+            echo -e "${YELLOW}→ 检测到 Homebrew，正在安装 FFmpeg...${NC}"
+            brew install ffmpeg
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✓ FFmpeg 安装成功${NC}"
+            else
+                echo -e "${RED}错误: FFmpeg 安装失败${NC}"
+                echo -e "${YELLOW}请手动运行: brew install ffmpeg${NC}"
+                exit 1
+            fi
+        else
+            echo -e "${RED}错误: 未检测到 Homebrew${NC}"
+            echo -e "${YELLOW}请先安装 Homebrew，或手动安装 FFmpeg${NC}"
+            echo -e "  Homebrew 安装: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            echo -e "  然后运行: brew install ffmpeg"
+            exit 1
+        fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux 系统
+        if command -v apt-get &> /dev/null; then
+            echo -e "${YELLOW}→ 检测到 apt，正在安装 FFmpeg...${NC}"
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✓ FFmpeg 安装成功${NC}"
+            else
+                echo -e "${RED}错误: FFmpeg 安装失败${NC}"
+                echo -e "${YELLOW}请手动运行: sudo apt-get install ffmpeg${NC}"
+                exit 1
+            fi
+        elif command -v yum &> /dev/null; then
+            echo -e "${YELLOW}→ 检测到 yum，正在安装 FFmpeg...${NC}"
+            sudo yum install -y ffmpeg
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✓ FFmpeg 安装成功${NC}"
+            else
+                echo -e "${RED}错误: FFmpeg 安装失败${NC}"
+                echo -e "${YELLOW}请手动运行: sudo yum install ffmpeg${NC}"
+                exit 1
+            fi
+        else
+            echo -e "${RED}错误: 无法识别的包管理器${NC}"
+            echo -e "${YELLOW}请手动安装 FFmpeg${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${RED}错误: 不支持的操作系统${NC}"
+        echo -e "${YELLOW}请手动安装 FFmpeg${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}✓ FFmpeg 已安装${NC}"
+    # 显示 FFmpeg 版本
+    ffmpeg -version | head -n 1
+fi
+
 # 检查虚拟环境是否存在
 if [ ! -d "venv" ]; then
     echo -e "${YELLOW}→ 虚拟环境不存在，正在创建...${NC}"
