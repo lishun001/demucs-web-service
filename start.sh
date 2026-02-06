@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# PM2 一键启动脚本 for demucs-web-service
+
+# 颜色定义
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}======================================${NC}"
+echo -e "${GREEN}  Demucs Web Service PM2 启动脚本${NC}"
+echo -e "${GREEN}======================================${NC}"
+echo ""
+
+# 检查 PM2 是否安装
+if ! command -v pm2 &> /dev/null; then
+    echo -e "${RED}错误: PM2 未安装${NC}"
+    echo -e "${YELLOW}请运行以下命令安装 PM2:${NC}"
+    echo -e "  npm install -g pm2"
+    exit 1
+fi
+
+# 创建日志目录
+echo -e "${YELLOW}→ 创建日志目录...${NC}"
+mkdir -p logs
+
+# 创建必要的目录
+echo -e "${YELLOW}→ 创建必要的目录...${NC}"
+mkdir -p uploads outputs
+
+# 停止已存在的进程
+echo -e "${YELLOW}→ 检查并停止已存在的进程...${NC}"
+pm2 delete demucs-web-service 2>/dev/null || true
+
+# 启动服务
+echo -e "${YELLOW}→ 启动 Demucs Web Service...${NC}"
+pm2 start ecosystem.config.js
+
+# 保存 PM2 进程列表
+echo -e "${YELLOW}→ 保存 PM2 进程列表...${NC}"
+pm2 save
+
+# 显示状态
+echo ""
+echo -e "${GREEN}✓ 启动完成!${NC}"
+echo ""
+pm2 status
+
+echo ""
+echo -e "${GREEN}常用命令:${NC}"
+echo -e "  查看日志:   ${YELLOW}pm2 logs demucs-web-service${NC}"
+echo -e "  查看状态:   ${YELLOW}pm2 status${NC}"
+echo -e "  停止服务:   ${YELLOW}pm2 stop demucs-web-service${NC}"
+echo -e "  重启服务:   ${YELLOW}pm2 restart demucs-web-service${NC}"
+echo -e "  删除服务:   ${YELLOW}pm2 delete demucs-web-service${NC}"
+echo -e "  监控面板:   ${YELLOW}pm2 monit${NC}"
+echo ""
+echo -e "${GREEN}服务访问地址: http://localhost:7001${NC}"
+echo ""
